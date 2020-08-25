@@ -8,3 +8,4 @@ Short scripts for slides/sheets automation and productivity
 
 
 Please send any modifications/updates as comments!
+Credited attributed to appropriate sources, please continute to do so.
