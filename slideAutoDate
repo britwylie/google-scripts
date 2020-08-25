@@ -1,0 +1,109 @@
+/*
+
+author: bwylie
+date: 8/24/2020
+
+modified from: 
+samples here: https://developers.google.com/slides/how-tos/add-shape
+code on here: https://www.youtube.com/watch?v=suLk3ZDJqsk
+
+need to enable google slides API for this to work
+
+todo: implement for every slide
+
+*/
+
+function onOpen() {
+  SlidesApp.getUi()
+    .createMenu('Date button')
+    .addItem('Make date', 'createDate')
+    .addToUi();
+  update();
+}
+
+function update(){
+  var date = Utilities.formatDate(new Date(), "GMT-7","MM/dd/yyyy");
+  var elements = SlidesApp.getActivePresentation().getSlides()[0].getPageElements();
+  for(var i=0;i<elements.length;i++){
+    if(elements[i].getObjectId()==("needsdate")){
+      elements[i].asShape().getText().clear();
+      elements[i].asShape().getText().appendText(date);
+      return;
+    }
+  }
+}
+
+function createDate() {
+  var date = Utilities.formatDate(new Date(), "GMT-7", "MM/dd/yyyy");
+  var presentationId = SlidesApp.getActivePresentation().getId();
+  var elementId = "needsdate";
+  var pt125 = {
+    magnitude: 125,
+    unit: 'PT'
+  };
+  var pt25 = {
+    magnitude: 25,
+    unit: 'PT'
+  };
+  
+  var requests = [{
+    createShape: {
+      objectId: elementId,
+      shapeType: 'TEXT_BOX',
+      elementProperties: {
+        pageObjectId: SlidesApp.getActivePresentation().getSlides()[0].getObjectId(),
+        size: {
+          height: pt25,
+          width: pt125
+        },
+        transform: {
+          scaleX: 1,
+          scaleY: 1,
+          translateX: 40,
+          translateY: 370,
+          unit: 'PT'
+        }
+      }
+    }
+  },
+  {
+  insertText: {
+    objectId: elementId,
+    insertionIndex: 0,
+    text: date,
+  }
+  },
+  {
+    updateTextStyle: {
+      objectId: elementId,
+      textRange: {
+        type: 'ALL',
+      },
+      style: {
+        fontSize: {
+          magnitude: 14,
+          unit: 'PT'
+        },
+        foregroundColor: {
+          opaqueColor: {
+            rgbColor: {
+              blue: 0.55,
+              green: 0.55,
+              red: 0.55
+            }
+          }
+        }
+      },
+      
+      fields: 'fontSize,foregroundColor'
+    }
+  },
+  ];
+  
+  // Execute the request
+  var createTextboxWithTextResponse = Slides.Presentations.batchUpdate({
+    requests: requests
+  }, presentationId);
+  //var createShapeResponse = createTextboxWithTextResponse.replies[0].createShape;
+  //console.log('Set date with ID: %s', createShapeResponse.objectId);
+}
